@@ -120,3 +120,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+GOOGLE_CLIENT_ID = "82627723617-3eb2532s24313rifep74fbsu25h95mhs.apps.googleusercontent.com"
+GOOGLE_CLIENT_SECRET = "zXmraDssD_ne0Npn8ncrcVDv"
+GOOGLE_REDIRECT_URI = "http://localhost:8000/install/connect"
+GOOGLE_SCOPE="https://www.googleapis.com/auth/fusiontables"
