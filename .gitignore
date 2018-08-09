@@ -53,6 +53,7 @@ coverage.xml
 # Django stuff:
 *.log
 local_settings.py
+db.sqlite3
 
 # virtualenv
 google_maps_address_saver_env/
@@ -69,4 +70,3 @@ google_maps_address_saver_env/
 
 # mypy
 .mypy_cache/
-
