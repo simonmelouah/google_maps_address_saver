@@ -35,4 +35,36 @@ def connect_google_app(request):
         ).save()
         request.session["access_token"] = auth_resp.get("access_token")
         request.session["refresh_token"] = auth_resp.get("refresh_token")
-    return HttpResponse("Success!")
+        return redirect('create_fusion_table')
+    return redirect('maps_home')
+
+
+@require_http_methods(["GET"])
+def create_fusion_table(request):
+    table_params = {
+            "columns": [
+                {
+                    "kind": "fusiontables#column",
+                    "columnId": 1,
+                    "name": "address",
+                    "type": "LOCATION"
+                },
+                {
+                    "kind": "fusiontables#column",
+                    "columnId": 2,
+                    "name": "created_at",
+                    "type": "DATETIME"
+                }
+            ],
+            "isExportable": False,
+            "name": "Google Maps Address Saver"
+        }
+    create_table = requests.post(
+        url="https://www.googleapis.com/fusiontables/v2/tables",
+        data=json.dumps(table_params),
+        headers={
+            "Authorization": f"Bearer {request.session.get('access_token')}",
+            "Content-Type": "application/json"})
+    if create_table.status_code != 200:
+        return HttpResponse(f"<h2>Error in creating table: {create_table.text}</h2>")
+    return redirect('maps_home')
