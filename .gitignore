@@ -55,7 +55,7 @@ coverage.xml
 local_settings.py
 
 # virtualenv
-address_saver_env/
+google_maps_address_saver_env/
 
 # Spyder project settings
 .spyderproject
