@@ -18,8 +18,6 @@ class FusionTable(models.Model):
 class Address(models.Model):
     """Address model for storing all addresses clicked."""
 
-    google_user_id = models.ForeignKey(
-        'google_install.GoogleUser', on_delete=models.CASCADE)
     fusion_table_id = models.ForeignKey(
         FusionTable, on_delete=models.CASCADE)
     latitude = models.FloatField(null=True)
