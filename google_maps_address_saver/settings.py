@@ -120,6 +120,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static"),
+]
+STATIC_ROOT = os.path.join(BASE_DIR, "static_cdn")
 
 GOOGLE_CLIENT_ID = "82627723617-3eb2532s24313rifep74fbsu25h95mhs.apps.googleusercontent.com"
 GOOGLE_CLIENT_SECRET = "zXmraDssD_ne0Npn8ncrcVDv"
