@@ -6,6 +6,7 @@ from google_maps_address_saver import settings
 import requests
 import json
 from .models import GoogleUser
+from maps_main.models import FusionTable
 
 
 @require_http_methods(["GET"])
@@ -29,14 +30,15 @@ def connect_google_app(request):
     auth_resp = requests.post(
         "https://www.googleapis.com/oauth2/v4/token", data=params).json()
     if auth_resp.get("refresh_token"):
+        print("Creating Fusion table")
         GoogleUser(
             access_token=auth_resp.get("access_token"),
             refresh_token=auth_resp.get("refresh_token")
         ).save()
         request.session["access_token"] = auth_resp.get("access_token")
         request.session["refresh_token"] = auth_resp.get("refresh_token")
-        return redirect('create_fusion_table')
-    return redirect('maps_home')
+        return redirect('/install/create-fusion-table/')
+    return redirect('maps_main_home')
 
 
 @require_http_methods(["GET"])
@@ -67,4 +69,12 @@ def create_fusion_table(request):
             "Content-Type": "application/json"})
     if create_table.status_code != 200:
         return HttpResponse(f"<h2>Error in creating table: {create_table.text}</h2>")
-    return redirect('maps_home')
+    create_table_json = json.loads(create_table.text)
+    google_user_object = GoogleUser.objects.filter(refresh_token=request.session.get('refresh_token')).first()
+    FusionTable(
+        google_user=google_user_object,
+        name="Google Maps Address Saver",
+        google_id= create_table_json.get("tableId")
+    ).save()
+    request.session["fusion_table_id"] = create_table_json.get("tableId")
+    return redirect('maps_main_home')

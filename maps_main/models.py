@@ -3,7 +3,7 @@ from django.db import models
 class FusionTable(models.Model):
     """Google fusion table reference model."""
 
-    google_user_id = models.ForeignKey(
+    google_user = models.ForeignKey(
         'google_install.GoogleUser', on_delete=models.CASCADE)
     name = models.CharField(max_length=50, null=True)
     google_id = models.CharField(max_length=128, null=True)
@@ -18,7 +18,7 @@ class FusionTable(models.Model):
 class Address(models.Model):
     """Address model for storing all addresses clicked."""
 
-    fusion_table_id = models.ForeignKey(
+    fusion_table = models.ForeignKey(
         FusionTable, on_delete=models.CASCADE)
     latitude = models.FloatField(null=True)
     longitude = models.FloatField(null=True)

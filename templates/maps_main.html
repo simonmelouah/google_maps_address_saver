@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <style>
+    /* Set the size of the div element that contains the map */
+
+    #map {
+      height: 800px;
+      /* The height is 400 pixels */
+      width: 100%;
+      /* The width is the width of the web page */
+    }
+  </style>
+</head>
+
+<body>
+  {% csrf_token %}
+  <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.11.1.min.js"></script>
+  <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+  <h3>My Google Maps Demo</h3>
+  <!--The div element for the map -->
+  <div id="map"></div>
+  <script>
+    function getCookie(name) {
+      var cookieValue = null;
+      if (document.cookie && document.cookie != '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+          var cookie = jQuery.trim(cookies[i]);
+          // Does this cookie string begin with the name we want?
+          if (cookie.substring(0, name.length + 1) == (name + '=')) {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
+        }
+      }
+      return cookieValue;
+    }
+    // Initialize and add the map
+    function initMap() {
+      // The location of Uluru
+      var uluru = {
+        lat: 53.3498,
+        lng: -7.6921
+      };
+      var uluru2 = {
+        lat: 53.3498,
+        lng: -8.6921
+      };
+      // The map, centered at Uluru
+      var map = new google.maps.Map(
+        document.getElementById('map'), {
+          zoom: 8,
+          center: uluru
+        });
+      // The marker, positioned at Uluru
+      var marker = new google.maps.Marker({
+        position: uluru,
+        map: map
+      });
+      var marker2 = new google.maps.Marker({
+        position: uluru,
+        map: map
+      });
+      map.addListener('click', function(e) {
+        // alert(e.latLng)
+        // placeMarkerAndPanTo(e.latLng, map);
+        var geocoder = new google.maps.Geocoder();
+
+        // Geocode the address
+        geocoder.geocode({
+          'location': e.latLng
+        }, function(results, status) {
+          if (status === google.maps.GeocoderStatus.OK && results.length > 0) {
+            // alert(results[0].formatted_address)
+            console.log(JSON.stringify(results[0], null, 4))
+            csrf = getCookie("csrftoken");
+            $.ajax({
+              type: "POST",
+              url: "/maps/main/",
+              data: JSON.stringify(results[0]),
+              beforeSend: function(xhr) {
+                xhr.setRequestHeader("X-CSRFToken", csrf);
+              },
+              success: function(result) {
+                location.reload();
+              }
+            });
+            // set it to the correct, formatted address if it's valid
+            // addr.value = results[0].formatted_address;
+            placeMarkerAndPanTo(e.latLng, map);
+            // show an error if it's not
+          } else alert("Invalid address");
+        });
+      });
+    }
+
+    function placeMarkerAndPanTo(latLng, map) {
+      var marker = new google.maps.Marker({
+        position: latLng,
+        map: map
+      });
+      map.panTo(latLng);
+    }
+  </script>
+  <!--Load the API from the specified URL
+    * The async attribute allows the browser to render the page while the API loads
+    * The key parameter will contain your own API key (which is not needed for this tutorial)
+    * The callback parameter executes the initMap() function
+    -->
+  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC8_LBQpAEXp3Lr0rnK9qw2ONWeZUzCg54&callback=initMap">
+  </script>
+</body>
+
+</html>

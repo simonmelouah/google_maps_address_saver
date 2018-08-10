@@ -19,4 +19,5 @@ from django.conf.urls import url
 
 urlpatterns = [
     url('install/', include('google_install.urls')),
+    url('maps/', include('maps_main.urls'))
 ]
