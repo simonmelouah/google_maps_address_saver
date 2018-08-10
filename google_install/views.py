@@ -49,6 +49,12 @@ def create_fusion_table(request):
                     "kind": "fusiontables#column",
                     "columnId": 1,
                     "name": "address",
+                    "type": "STRING"
+                },
+                {
+                    "kind": "fusiontables#column",
+                    "columnId": 1,
+                    "name": "coordinates",
                     "type": "LOCATION"
                 },
                 {
@@ -74,7 +80,7 @@ def create_fusion_table(request):
     FusionTable(
         google_user=google_user_object,
         name="Google Maps Address Saver",
-        google_id= create_table_json.get("tableId")
+        google_id=create_table_json.get("tableId")
     ).save()
     request.session["fusion_table_id"] = create_table_json.get("tableId")
     return redirect('maps_main_home')
