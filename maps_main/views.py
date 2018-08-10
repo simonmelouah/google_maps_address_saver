@@ -4,8 +4,10 @@ import datetime
 import json
 import requests
 from .models import FusionTable, Address
+from google_install.views import check_access_token
 
 
+@check_access_token
 @require_http_methods(["GET", "POST"])
 def maps_main_home(request):
     """Main home page that renders the map."""
@@ -16,7 +18,6 @@ def maps_main_home(request):
             headers={
                 "Authorization": f"Bearer {request.session.get('access_token')}",
                 "Content-Type": "application/json"}).json()
-        print(fusion_table_values.get("rows")[0][1], fusion_table_values.get("rows")[0][2])
         return render(request, 'maps_main.html',
                       {'fusion_table_rows': fusion_table_values.get("rows"),
                        'map_centre_lat': fusion_table_values.get("rows")[0][1] if fusion_table_values.get("rows") else None,

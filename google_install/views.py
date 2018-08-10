@@ -7,6 +7,26 @@ import requests
 import json
 from .models import GoogleUser
 from maps_main.models import FusionTable
+from functools import wraps
+
+def check_access_token(input_function):
+    def wrap(request, *args, **kwargs):
+        if not request.session.get('refresh_token'):
+            return redirect('/install')
+        params = {
+            "client_id": settings.GOOGLE_CLIENT_ID,
+            "client_secret": settings.GOOGLE_CLIENT_SECRET,
+            "refresh_token": request.session.get('refresh_token'),
+            "grant_type": "refresh_token"
+        }
+
+        resp = requests.post(
+            "https://www.googleapis.com/oauth2/v4/token", data=params).json()
+        request.session["access_token"] = resp.get("access_token")
+        return input_function(request, *args, **kwargs)
+    wrap.__doc__=input_function.__doc__
+    wrap.__name__=input_function.__name__
+    return wrap
 
 
 @require_http_methods(["GET"])
@@ -20,6 +40,8 @@ def install_google_app(request):
 @require_http_methods(["GET"])
 def connect_google_app(request):
     """Main home page that renders the map."""
+    if not request.GET.get('code'):
+        return redirect('/install')
     params = {
         "client_id": settings.GOOGLE_CLIENT_ID,
         "client_secret": settings.GOOGLE_CLIENT_SECRET,
@@ -41,6 +63,7 @@ def connect_google_app(request):
     return redirect('maps_main_home')
 
 
+@check_access_token
 @require_http_methods(["GET"])
 def create_fusion_table(request):
     table_params = {
