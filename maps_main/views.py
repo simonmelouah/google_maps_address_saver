@@ -32,5 +32,4 @@ def maps_main_home(request):
         longitude=lng,
         full_address=formatted_address
     ).save()
-    print("Saved")
     return HttpResponse(status=200)
