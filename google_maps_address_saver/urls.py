@@ -16,8 +16,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.conf.urls import url
+from google_install import views
 
 urlpatterns = [
     url('install/', include('google_install.urls')),
     url('maps/', include('maps_main.urls'))
 ]
+
+handler404 = views.error_handler
+handler500 = views.error_handler

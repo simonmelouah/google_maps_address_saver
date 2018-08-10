@@ -28,6 +28,9 @@ def check_access_token(input_function):
     wrap.__name__=input_function.__name__
     return wrap
 
+def error_handler(request):
+    return redirect('/install')
+
 
 @require_http_methods(["GET"])
 def install_google_app(request):
