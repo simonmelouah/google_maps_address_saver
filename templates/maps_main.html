@@ -18,7 +18,7 @@
   {% csrf_token %}
   <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.11.1.min.js"></script>
   <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
-  <h3>My Google Maps Demo</h3>
+  <h3>Google Maps Address Saver</h3>
   <!--The div element for the map -->
   <div id="map"></div>
   <script>
@@ -40,29 +40,40 @@
     // Initialize and add the map
     function initMap() {
       // The location of Uluru
-      var uluru = {
-        lat: 53.3498,
-        lng: -7.6921
-      };
-      var uluru2 = {
-        lat: 53.3498,
-        lng: -8.6921
-      };
-      // The map, centered at Uluru
-      var map = new google.maps.Map(
-        document.getElementById('map'), {
-          zoom: 8,
-          center: uluru
-        });
-      // The marker, positioned at Uluru
-      var marker = new google.maps.Marker({
-        position: uluru,
-        map: map
-      });
-      var marker2 = new google.maps.Marker({
-        position: uluru,
-        map: map
-      });
+      {% if map_centre_lat and map_centre_lng %}
+        var uluru = {
+          lat: {{ map_centre_lat }},
+          lng: {{ map_centre_lng }}
+        };
+        var map = new google.maps.Map(
+          document.getElementById('map'), {
+            zoom: 8,
+            center: uluru
+          });
+      {% else %}
+        var uluru = {
+          lat: 53,
+          lng: -7
+        };
+        var map = new google.maps.Map(
+          document.getElementById('map'), {
+            zoom: 8,
+            center: uluru
+          });
+      {% endif %}
+      {% if fusion_table_rows %}
+        {% for row in fusion_table_rows %}
+          var uluru = {
+            lat: {{ row.1 }},
+            lng: {{ row.2 }}
+          };
+          // The marker, positioned at Uluru
+          var marker = new google.maps.Marker({
+            position: uluru,
+            map: map
+          });
+          {% endfor %}
+      {% endif %}
       map.addListener('click', function(e) {
         // alert(e.latLng)
         // placeMarkerAndPanTo(e.latLng, map);
@@ -72,9 +83,7 @@
         geocoder.geocode({
           'location': e.latLng
         }, function(results, status) {
-          if (status === google.maps.GeocoderStatus.OK && results.length > 0) {
-            // alert(results[0].formatted_address)
-            console.log(JSON.stringify(results[0], null, 4))
+          if (status === google.maps.GeocoderStatus.OK && results.length > 0 && !(results[0]["formatted_address"].includes("Unnamed Road"))) {
             csrf = getCookie("csrftoken");
             $.ajax({
               type: "POST",
@@ -89,19 +98,11 @@
             });
             // set it to the correct, formatted address if it's valid
             // addr.value = results[0].formatted_address;
-            placeMarkerAndPanTo(e.latLng, map);
+            // placeMarkerAndPanTo(e.latLng, map);
             // show an error if it's not
           } else alert("Invalid address");
         });
       });
-    }
-
-    function placeMarkerAndPanTo(latLng, map) {
-      var marker = new google.maps.Marker({
-        position: latLng,
-        map: map
-      });
-      map.panTo(latLng);
     }
   </script>
   <!--Load the API from the specified URL

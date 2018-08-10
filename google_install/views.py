@@ -53,13 +53,19 @@ def create_fusion_table(request):
                 },
                 {
                     "kind": "fusiontables#column",
-                    "columnId": 1,
-                    "name": "coordinates",
-                    "type": "LOCATION"
+                    "columnId": 2,
+                    "name": "lat",
+                    "type": "NUMBER"
                 },
                 {
                     "kind": "fusiontables#column",
-                    "columnId": 2,
+                    "columnId": 3,
+                    "name": "lng",
+                    "type": "NUMBER"
+                },
+                {
+                    "kind": "fusiontables#column",
+                    "columnId": 4,
                     "name": "created_at",
                     "type": "DATETIME"
                 }
