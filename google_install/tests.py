@@ -1,9 +1,8 @@
 """Test for shopify install app."""
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.conf import settings
-# import mock
-# from merchants.models import Merchant, MerchantTargetStore
-# from subscriptions.models import Subscription
+from mock import patch, Mock
+import json
 
 
 class BaseClass(object):
@@ -40,7 +39,7 @@ class TestGoogleConnectApp(BaseClass, TestCase):
                              target_status_code=400)
 
     def test_google_connect_app_successful_request_without_refresh_token(self):
-        """Confirm if redirect happens when query string code is omitted."""
+        """Confirm if redirect happens to /maps/main/ without refresh token."""
         session = self.client.session
         session["refresh_token"] = self.refresh_token
         session["access_token"] = self.access_token
@@ -50,3 +49,14 @@ class TestGoogleConnectApp(BaseClass, TestCase):
                              expected_url='/maps/main/',
                              status_code=301,
                              target_status_code=200)
+
+    def test_google_connect_app_successful_request_with_refresh_token(self):
+        """Confirm if redirect happens to /maps/main/ with refresh token."""
+        with patch('google_install.views.requests.post') as mock_post:
+            post_text = str({"refresh_token": self.refresh_token, "access_token": self.access_token})
+            mock_post.return_value = Mock(status_code=200, text=post_text)
+            response = self.client.get('/install/connect?code=sedwe4rwe', follow=True)
+            self.assertRedirects(response,
+                                 expected_url='/maps/main/',
+                                 status_code=301,
+                                 target_status_code=200)

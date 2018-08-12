@@ -51,18 +51,17 @@ def connect_google_app(request):
     auth_resp = requests.post(
         "https://www.googleapis.com/oauth2/v4/token", data=params).json()
     if auth_resp.get("refresh_token"):
+        print(auth_resp.get("access_token"))
         GoogleUser(
             access_token=auth_resp.get("access_token"),
             refresh_token=auth_resp.get("refresh_token")
         ).save()
         request.session["access_token"] = auth_resp.get("access_token")
         request.session["refresh_token"] = auth_resp.get("refresh_token")
-        return redirect('/install/create-fusion-table/')
+        create_fusion_table(request)
     return redirect('maps_main_home')
 
 
-@check_access_token
-@require_http_methods(["GET"])
 def create_fusion_table(request):
     table_params = {
             "columns": [
@@ -110,4 +109,3 @@ def create_fusion_table(request):
         google_id=create_table_json.get("tableId")
     ).save()
     request.session["fusion_table_id"] = create_table_json.get("tableId")
-    return redirect('maps_main_home')
