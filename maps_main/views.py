@@ -25,9 +25,9 @@ def maps_main_home(request):
                 "Content-Type": "application/json"})
         # If the request is successful, convert it to JSON and render the map
         # containing all the markers
-        if fusion_table_response != 200:
+        if fusion_table_response.status_code != 200:
             return HttpResponse(status=fusion_table_response.status_code)
-        fusion_table_values = json.loads(fusion_table_response)
+        fusion_table_values = json.loads(fusion_table_response.text)
         return render(
             request,
             'maps_main.html',
