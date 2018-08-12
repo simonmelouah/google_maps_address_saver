@@ -1,4 +1,5 @@
 $(document).ready(function () {
+  console.log("Here");
   function getCookie(name) {
     var cookieValue = null;
     if (document.cookie && document.cookie != '') {

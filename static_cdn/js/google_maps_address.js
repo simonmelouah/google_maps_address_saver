@@ -1,12 +1,33 @@
 $(document).ready(function () {
+  console.log("Here");
+  function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie != '') {
+      var cookies = document.cookie.split(';');
+      for (var i = 0; i < cookies.length; i++) {
+        var cookie = jQuery.trim(cookies[i]);
+        if (cookie.substring(0, name.length + 1) == (name + '=')) {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
   $('#deleteAll').click(function(){
+    csrf = getCookie("csrftoken");
     $.ajax({
         type : "DELETE",
         url : "/maps/main",
-        contentType: 'application/json;charset=UTF-8',
-        dataType: "json",
+        beforeSend: function(xhr) {
+          xhr.setRequestHeader("X-CSRFToken", csrf);
+        },
         success: function(result) {
           location.reload();
-        }
+        },
+        error: function(xhr, status, error) {
+          alert(error);
+      }
     });
   });
+});

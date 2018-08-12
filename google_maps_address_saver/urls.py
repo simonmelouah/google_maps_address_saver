@@ -22,6 +22,3 @@ urlpatterns = [
     url('install/', include('google_install.urls')),
     url('maps/', include('maps_main.urls'))
 ]
-
-handler404 = views.error_handler
-handler500 = views.error_handler

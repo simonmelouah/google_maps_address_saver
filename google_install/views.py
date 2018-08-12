@@ -11,7 +11,7 @@ from functools import wraps
 
 def check_access_token(input_function):
     def wrap(request, *args, **kwargs):
-        if not request.session.get('refresh_token'):
+        if not request.session.get('refresh_token') and not request.session.get('access_token'):
             return redirect('/install')
         params = {
             "client_id": settings.GOOGLE_CLIENT_ID,
@@ -36,7 +36,6 @@ def error_handler(request):
 def install_google_app(request):
     """Main home page that renders the map."""
     url = f"https://accounts.google.com/o/oauth2/auth?response_type=code&client_id={settings.GOOGLE_CLIENT_ID}&redirect_uri={settings.GOOGLE_REDIRECT_URI}&scope={settings.GOOGLE_SCOPE}&state=gK6f4YaBxLaErFxfJfrBFRulFC1JO3&access_type=offline&include_granted_scopes=true"
-    # return HttpResponse(url)
     return redirect(url)
 
 
@@ -55,7 +54,6 @@ def connect_google_app(request):
     auth_resp = requests.post(
         "https://www.googleapis.com/oauth2/v4/token", data=params).json()
     if auth_resp.get("refresh_token"):
-        print("Creating Fusion table")
         GoogleUser(
             access_token=auth_resp.get("access_token"),
             refresh_token=auth_resp.get("refresh_token")
