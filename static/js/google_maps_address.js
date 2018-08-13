@@ -1,5 +1,4 @@
 $(document).ready(function () {
-  console.log("Here");
   function getCookie(name) {
     var cookieValue = null;
     if (document.cookie && document.cookie != '') {
@@ -14,6 +13,7 @@ $(document).ready(function () {
     }
     return cookieValue;
   }
+  // Delete request sent to delete all data
   $('#deleteAll').click(function(){
     csrf = getCookie("csrftoken");
     $.ajax({

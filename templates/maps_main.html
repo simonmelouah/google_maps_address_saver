@@ -52,21 +52,28 @@
   <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.11.1.min.js"></script>
   <script src="/static/js/google_maps_address.js"></script>
   <script>
+   // Get the CSRF token from the cookie
     function getCookie(name) {
       var cookieValue = null;
       if (document.cookie && document.cookie != '') {
+        //  Split all the cookies separated by a semicolon
         var cookies = document.cookie.split(';');
         for (var i = 0; i < cookies.length; i++) {
           var cookie = jQuery.trim(cookies[i]);
           if (cookie.substring(0, name.length + 1) == (name + '=')) {
+            // Decode the CSRF uri component
             cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
             break;
           }
         }
       }
+      // Return the cookie value
       return cookieValue;
     }
+    //  Initialise the map
     function initMap() {
+      // If the map centre coordinates exist, set the centre
+      // Otherwise set the centre of the map to default to Ireland
       {% if map_centre_lat and map_centre_lng %}
         var uluru = {
           lat: {{ map_centre_lat }},
@@ -88,6 +95,7 @@
             center: uluru
           });
       {% endif %}
+      // If the fusion table contains values, set markers on the map with those values
       {% if fusion_table_rows %}
         {% for row in fusion_table_rows %}
           var uluru = {
@@ -100,11 +108,15 @@
           });
           {% endfor %}
       {% endif %}
+      // Map listener for click event
       map.addListener('click', function(e) {
         var geocoder = new google.maps.Geocoder();
         geocoder.geocode({
           'location': e.latLng
         }, function(results, status) {
+          // If the clicked location is a valid address (not a road/mountain/lake)
+          // send a post request storing the address otherwise send an alert to say
+          //  it's an invalid address
           if (status === google.maps.GeocoderStatus.OK && results.length > 0 && !(results[0]["formatted_address"].includes("Unnamed Road"))) {
             csrf = getCookie("csrftoken");
             $.ajax({
