@@ -1,6 +1,7 @@
 # Google maps address saver
 ## Summary ##
 A small Django application that combines fusion tables with google maps to store clicked locations.
+See https://youtu.be/ljYlj4fH_ng for a video summary of its functionality in action.
 
 ## Features ##
 * Authenticate with google account
